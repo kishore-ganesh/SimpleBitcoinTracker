@@ -1,7 +1,7 @@
 function display(JSONdata)
 {
-   data=JSON.parse(JSONdata);
-   usdRates=data.bpi.USD.rate;
+   var data=JSON.parse(JSONdata);
+   var usdRates=data.bpi.USD.rate;
    console.log(usdRates)
    $("#display").html(usdRates)   
 }
@@ -9,7 +9,7 @@ function display(JSONdata)
 //weeks, days, etc, also allow user to choose currency, real time updates
 function constructURL(baseURL, params)
 {
-    finalURL=baseURL;
+    var finalURL=baseURL;
     finalURL+="?";
     params.forEach((param)=>{
         finalURL+=param.key+"="+param.value+"&";
@@ -53,7 +53,7 @@ function updateHistoricalGraph(historicalChart, historicalDatapoints,JSONData)
 
 function getHistoricalPrice(historicalChart, historicalDatapoints,startDate, endDate)
 {
-    URL="https://api.coindesk.com/v1/bpi/historical/close.json"
+   var URL="https://api.coindesk.com/v1/bpi/historical/close.json"
     if(startDate!=undefined && endDate!=undefined)
     {
         URL=constructURL(URL, [{key: "start", value: startDate}, {key: "end", value:endDate}])
@@ -68,8 +68,8 @@ function getHistoricalPrice(historicalChart, historicalDatapoints,startDate, end
 
 function refreshHistoricalData(historicalChart, historicalDatapoints)
 {
-    startDate=$("#start").val();
-    endDate=$('#end').val();
+    var startDate=$("#start").val();
+    var endDate=$('#end').val();
     if(startDate<endDate) 
    {
     $("#error").html("");    
@@ -86,10 +86,10 @@ function refreshHistoricalData(historicalChart, historicalDatapoints)
 function constructDataPoints(historicalDatapoints,JSONdata)
 {
     
-    data=JSON.parse(JSONdata);
+  var data=JSON.parse(JSONdata);
     historicalDatapoints.splice(0,historicalDatapoints.length)
     console.log(data);
-    keys=Object.keys(data.bpi);
+   var keys=Object.keys(data.bpi);
     keys.forEach((key)=>
     {
         //console.log(data.bpi[key])
@@ -107,8 +107,8 @@ function getRealTimePrice()
 {
     return new Promise((resolve, reject)=>{
         
-    baseURL="https://api.coindesk.com/v1/bpi/currentprice/USD.json"
-    finalURL=constructURL(baseURL, [{key: "currency", value:"BTC" }])
+    var baseURL="https://api.coindesk.com/v1/bpi/currentprice/USD.json"
+    var finalURL=constructURL(baseURL, [{key: "currency", value:"BTC" }])
     $.get(baseURL, (JSONdata)=>{
         display(JSONdata);
         console.log("reached")
@@ -147,7 +147,7 @@ function updateRealTimeGraph(chart, datapoints)
     JSONdata=getRealTimePrice().then((JSONdata)=>{
 
        // console.log(JSONdata);
-        data=JSON.parse(JSONdata);
+      var data=JSON.parse(JSONdata);
         datapoints.push({label:data.time.updated, y: data.bpi.USD.rate_float})
         // if(datapoints.length>20)
         // {
