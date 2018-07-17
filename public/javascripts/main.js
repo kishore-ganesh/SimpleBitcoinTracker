@@ -41,10 +41,78 @@ function createHistoricalGraph(historicalDatapoints)
     return chart;
 }
 
-function updateHistoricalGraph(historicalChart, historicalDatapoints,JSONData)
+function constructDatapoints(datapoints,JSONdata, groupBy)
 {
-   constructDataPoints(historicalDatapoints,JSONData)
+    data=JSON.parse(JSONdata);
+    keys=Object.keys(data.bpi);
+    datapoints.splice(0,datapoints.length);
+    var sliceEnd=keys[0].length;
+   // console.log(keys[0].slice(0,sliceEnd));
+    //var currentValue;
+    if(groupBy=="year")
+    {
+        sliceEnd=4;
+    }
 
+    else if(groupBy=="month")
+    {
+        sliceEnd=7;
+    }
+
+
+    
+    var currentLabel=keys[0].slice(0,sliceEnd);
+  
+    
+    var count=0;
+    var sum=0;
+
+    keys.forEach((key)=>{
+        //console.log(currentValue);
+        //first iteration
+       // console.log(key.slice(0,7)+" "+currentLabel)
+        if(key.slice(0,sliceEnd)==currentLabel)
+        {
+          //  console.log("h")
+            
+            sum+=data.bpi[key];
+            count++;
+            //console.log(sum)
+            currentLabel=key.slice(0,sliceEnd);
+        }
+
+        else
+        {
+            
+            //console.log(key)
+          //  console.log(currentLabel)
+            
+            datapoints.push({label: currentLabel, y:sum/count})
+            //console.log(datapoints)
+            
+            sum=data.bpi[key];
+            count=1;
+            currentLabel=key.slice(0,sliceEnd);
+        }
+
+        if(datapoints.length==0)
+        {
+            datapoints.push({label: currentLabel, y: sum/count})
+        }
+
+
+
+    })
+}
+
+
+
+
+function updateHistoricalGraph(historicalChart, historicalDatapoints,JSONData, groupBy)
+{
+   //constructDataPoints(historicalDatapoints,JSONData)
+   constructDatapoints(historicalDatapoints, JSONData, groupBy);
+   console.log(historicalDatapoints); 
    // console.log(historicalDatapoints)
     
 
@@ -62,7 +130,26 @@ function getHistoricalPrice(historicalChart, historicalDatapoints,startDate, end
     $.get(URL, (JSONdata)=>{
         
         updateHistoricalGraph(historicalChart, historicalDatapoints,JSONdata);
+
+        $("#dailybtn").click(()=>{
+
+            updateHistoricalGraph(historicalChart, historicalDatapoints, JSONdata);
+        })
+    
+        $("#monthlybtn").click(()=>{
+    
+            updateHistoricalGraph(historicalChart, historicalDatapoints, JSONdata, "month");
+        })
+    
+        $("#yearlybtn").click(()=>{
+    
+            
+            updateHistoricalGraph(historicalChart, historicalDatapoints, JSONdata, "year");
+        })
     })
+
+   
+
 }
 
 
@@ -83,23 +170,7 @@ function refreshHistoricalData(historicalChart, historicalDatapoints)
     //add checking
 }
 
-function constructDataPoints(historicalDatapoints,JSONdata)
-{
-    
-  var data=JSON.parse(JSONdata);
-    historicalDatapoints.splice(0,historicalDatapoints.length)
-    console.log(data);
-   var keys=Object.keys(data.bpi);
-    keys.forEach((key)=>
-    {
-        //console.log(data.bpi[key])
-        historicalDatapoints.push({
-            label: key,
-            y: data.bpi[key]
-        })
-    })
 
-}
 //function to construct y points and x labels
 
 
@@ -160,6 +231,11 @@ function updateRealTimeGraph(chart, datapoints)
 }
 
 
+
+
+
+
+
 //refactor to make get data only get data
 
 window.onload=function(){
@@ -180,4 +256,5 @@ window.onload=function(){
         
     });
 
+   
 }
