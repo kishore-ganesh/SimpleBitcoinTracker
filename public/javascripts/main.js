@@ -149,10 +149,10 @@ function updateRealTimeGraph(chart, datapoints)
        // console.log(JSONdata);
         data=JSON.parse(JSONdata);
         datapoints.push({label:data.time.updated, y: data.bpi.USD.rate_float})
-        if(datapoints.length>20)
-        {
-            datapoints.shift();
-        }
+        // if(datapoints.length>20)
+        // {
+        //     datapoints.shift();
+        // }
         chart.render();
     })
     
