@@ -2,7 +2,7 @@ function display(JSONdata)
 {
    var data=JSON.parse(JSONdata);
    var usdRates=data.bpi.USD.rate;
-   console.log(usdRates)
+//   console.log(usdRates)
    $("#display").html(usdRates)   
 }
 
@@ -71,7 +71,7 @@ function constructDatapoints(datapoints,JSONdata, groupBy)
         //console.log(currentValue);
         //first iteration
        // console.log(key.slice(0,7)+" "+currentLabel)
-        console.log(key)
+        //console.log(key)
         if(key.slice(0,sliceEnd)==currentLabel)
         {
           //  console.log("h")
@@ -91,7 +91,7 @@ function constructDatapoints(datapoints,JSONdata, groupBy)
           //  console.log(currentLabel)
             datapoints.push({label: currentLabel, y:sum/count})
             //console.log(datapoints)
-            console.log(datapoints.length)
+          //  console.log(datapoints.length)
             sum=data.bpi[key];
             count=1;
             currentLabel=key.slice(0,sliceEnd);
@@ -112,7 +112,7 @@ function updateHistoricalGraph(historicalChart, historicalDatapoints,JSONData, g
 {
    //constructDataPoints(historicalDatapoints,JSONData)
    constructDatapoints(historicalDatapoints, JSONData, groupBy);
-   console.log(historicalDatapoints); 
+  // console.log(historicalDatapoints); 
    // console.log(historicalDatapoints)
     
 
@@ -125,7 +125,7 @@ function getHistoricalPrice(historicalChart, historicalDatapoints,startDate, end
     if(startDate!=undefined && endDate!=undefined)
     {
         URL=constructURL(URL, [{key: "start", value: startDate}, {key: "end", value:endDate}])
-        console.log(URL);
+   //     console.log(URL);
     }
     $.get(URL, (JSONdata)=>{
         
@@ -176,13 +176,15 @@ function refreshHistoricalData(historicalChart, historicalDatapoints)
 
 function getRealTimePrice()
 {
+
+   
     return new Promise((resolve, reject)=>{
         
     var baseURL="https://api.coindesk.com/v1/bpi/currentprice/USD.json"
     var finalURL=constructURL(baseURL, [{key: "currency", value:"BTC" }])
     $.get(baseURL, (JSONdata)=>{
         display(JSONdata);
-        console.log("reached")
+        //console.log("reached")
         resolve (JSONdata);
     })
 
@@ -213,22 +215,44 @@ function createRealTimeGraph(datapoints)
 
 function updateRealTimeGraph(chart, datapoints)
 {
-    //not happening because returning too early
- //   console.log(datapoints)
-    JSONdata=getRealTimePrice().then((JSONdata)=>{
+    
+    $.post("/realtime", (JSONData)=>{
 
-       // console.log(JSONdata);
-      var data=JSON.parse(JSONdata);
-        datapoints.push({label:data.time.updated, y: data.bpi.USD.rate_float})
-        // if(datapoints.length>20)
-        // {
-        //     datapoints.shift();
-        // }
+        //datapoints=JSON.parse(JSONData);
+        //datapoints.push.apply(datapoints, data);
+        data=JSON.parse(JSONData);
+        data.forEach((datapoint)=>{
+            datapoints.push(datapoint);
+        })
+
+        datapoints.splice();
+
+        console.log(data.length);
+        console.log(datapoints.length)
+        //datapoints.push({label:"1", y:2})
+        console.log(chart);
         chart.render();
     })
+
+    //not happening because returning too early
+ //   console.log(datapoints)
+
+ // JSONdata=getRealTimePrice().then((JSONdata)=>{
+
+    //    // console.log(JSONdata);
+    //   var data=JSON.parse(JSONdata);
+    //     datapoints.push({label:data.time.updated, y: data.bpi.USD.rate_float})
+    //     // if(datapoints.length>20)
+    //     // {
+    //     //     datapoints.shift();
+    //     // }
+    //     chart.render();
+    // })
     
 
 }
+
+// function saveToServer
 
 
 
@@ -243,11 +267,15 @@ window.onload=function(){
     var datapoints=[];
     var historicalDatapoints=[];
     var realTimeChart=createRealTimeGraph(datapoints)
+    getRealTimePrice();
     updateRealTimeGraph(realTimeChart, datapoints)
     var historicalChart=createHistoricalGraph(historicalDatapoints)
     //getRealTimePrice();
     //chart.render();
     setInterval(()=>{updateRealTimeGraph(realTimeChart, datapoints)}, 30000);
+    setInterval(()=>{
+        getRealTimePrice()
+    }, 30000);
    
     getHistoricalPrice(historicalChart, historicalDatapoints);
     
@@ -258,3 +286,5 @@ window.onload=function(){
 
    
 }
+
+//save it in a db, post and retrieve
