@@ -25,7 +25,7 @@ function createHistoricalGraph(historicalDatapoints)
 {
     var chart=new CanvasJS.Chart("chartContainer", {
         animationEnabled: true, 
-        theme: "dark2",
+        theme: "dark1",
         title: {
             text: "Bitcoin price data"
         },
@@ -71,6 +71,7 @@ function constructDatapoints(datapoints,JSONdata, groupBy)
         //console.log(currentValue);
         //first iteration
        // console.log(key.slice(0,7)+" "+currentLabel)
+        console.log(key)
         if(key.slice(0,sliceEnd)==currentLabel)
         {
           //  console.log("h")
@@ -87,22 +88,21 @@ function constructDatapoints(datapoints,JSONdata, groupBy)
             //console.log(key)
           //  console.log(currentLabel)
             
+          //  console.log(currentLabel)
             datapoints.push({label: currentLabel, y:sum/count})
             //console.log(datapoints)
-            
+            console.log(datapoints.length)
             sum=data.bpi[key];
             count=1;
             currentLabel=key.slice(0,sliceEnd);
         }
 
-        if(datapoints.length==0)
-        {
-            datapoints.push({label: currentLabel, y: sum/count})
-        }
-
-
-
+        // if(datapoints.length===0)
+        // {
+        //     datapoints.push({label: currentLabel, y: sum/count})
+        // }
     })
+        datapoints.push({label: currentLabel, y: sum/count})
 }
 
 
@@ -196,7 +196,7 @@ function createRealTimeGraph(datapoints)
     var chart=new CanvasJS.Chart("realTimeChartContainer", {
 
         animationEnabled: true,
-        theme: "dark2",
+        theme: "dark1",
         title: {
             text: "Real Time Bitcoin Price"
         },
