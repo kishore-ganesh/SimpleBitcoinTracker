@@ -9,7 +9,7 @@ It interfaces with Coindesk's API, and features a "real-time" graph that updates
 
 How to use: 
 
-1. node install
+1. npm install
 2. node app.js
 3. Navigate to localhost:4000
 
